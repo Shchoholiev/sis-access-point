@@ -5,12 +5,10 @@ from cameras.operations import capture_image
 from app.config import config
 from app.logger import logger
 
-SENSOR_PIN = 18
-
-def setup_pir_motion_sensor():
+def setup_pir_motion_sensor(pin: int):
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(False)
-    GPIO.setup(SENSOR_PIN, GPIO.IN)
+    GPIO.setup(pin, GPIO.IN)
 
 async def monitor_pir_motion_sensor(pin: int):
     while True:
