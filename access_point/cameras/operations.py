@@ -10,11 +10,13 @@ def cleanup_camera():
     camera.close()
 
 def capture_image():
-    stream = io.BytesIO()
-
     try:
+        stream = io.BytesIO()
+
         camera.capture(stream, format='jpeg')
         image_bytes = stream.getvalue()
+
+        logger.info(f"Image captured.")
 
         return image_bytes
     except Exception as e:
