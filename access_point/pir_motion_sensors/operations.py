@@ -9,6 +9,9 @@ def setup_pir_motion_sensor(pin: int):
     global motion_sensor
     motion_sensor = MotionSensor(pin)
 
+def cleanup_motion_sensor():
+    motion_sensor.close()
+
 async def monitor_pir_motion_sensor():
     is_item_present = False
 
