@@ -1,30 +1,33 @@
 import asyncio
-from urllib import request
-import RPi.GPIO as GPIO
-from cameras.operations import capture_image
+import requests
+from gpiozero import MotionSensor
+from cameras import capture_image
 from app.config import config
 from app.logger import logger
 
 def setup_pir_motion_sensor(pin: int):
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setwarnings(False)
-    GPIO.setup(pin, GPIO.IN)
+    global motion_sensor
+    motion_sensor = MotionSensor(pin)
 
-async def monitor_pir_motion_sensor(pin: int):
+async def monitor_pir_motion_sensor():
+    is_item_present = False
+
     while True:
-        if GPIO.input(pin):
-            logger.info(f"Motion detected by PIR sensor")
+        motion_sensor.wait_for_motion()
+        motion_sensor.wait_for_no_motion()
+        # delay before capturing a photo
+        await asyncio.sleep(0.3)
 
-            # Wait to allow user to remove their hand from the image
-            await asyncio.sleep(0.5)
-
+        if is_item_present:
+            is_item_present = False
+        else:
             item_photo = capture_image()
 
             url = f"{config['apiUrl']}/access-points/{config['deviceId']}/items/identify-by-image"
             files = {'image': ('image.jpg', item_photo, 'multipart/form-data')}
 
-            response = request.post(url, files=files)
+            response = requests.post(url, files=files)
 
             logger.info(f"POST request sent to {url}. Response status code: {response.status_code}")
-                
-        await asyncio.sleep(0.2)  # Sleep for a short period to prevent blocking
+
+            is_item_present = True

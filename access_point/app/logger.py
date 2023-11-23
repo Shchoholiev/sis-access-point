@@ -9,12 +9,12 @@ def setup_logger():
         logger: The configured logger object.
     """
 
-    logger = logging.getLogger('shelves_controller_logger')
+    logger = logging.getLogger('access_point_logger')
     logger.setLevel(logging.INFO)
 
     # Create a handler that writes log messages to a file, with rotation
     handler = RotatingFileHandler(
-        'shelves_controller.log',  # Path to the log file
+        'access_point.log',  # Path to the log file
         maxBytes=15*1024*1024,  # Max log file size (15MB)
         backupCount=3  # Number of backup files to keep
     )

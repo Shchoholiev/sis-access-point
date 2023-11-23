@@ -1,6 +1,6 @@
 import asyncio
-from pir_motion_sensors.operations import SENSOR_PIN, monitor_pir_motion_sensor, setup_pir_motion_sensor
-from cameras.operations import setup_camera
+from pir_motion_sensors import monitor_pir_motion_sensor, setup_pir_motion_sensor
+from cameras import setup_camera
 from .logger import logger
 
 async def main():
@@ -13,10 +13,11 @@ async def main():
 
     try:
         await asyncio.gather(
-            monitor_pir_motion_sensor(PIR_SENSOR_PIN),
+            monitor_pir_motion_sensor(),
             stop_event.wait()  # Waiting for stop event
         )
-    except:
+    except Exception as e:
+        logger.error(f"Error: {e}")
         logger.info("Application stopping...")
     finally:
         logger.info("Application stopped.")
