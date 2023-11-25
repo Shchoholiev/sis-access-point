@@ -4,13 +4,31 @@ from PIL import Image
 from app.logger import logger
 
 def setup_camera():
+    """
+    Initializes the camera object by creating a global `camera` object.
+    """
+
     global camera
     camera = picamera.PiCamera()
 
 def cleanup_camera():
+    """
+    Closes the camera connection.
+    """
+    
     camera.close()
 
 def capture_image():
+    """
+    Captures an image from the camera and flips it because the camera installed upside down.
+
+    Returns:
+        bytes: Image bytes.
+        
+    Raises:
+        Exception: If there is an error capturing the image.
+    """
+
     try:
         stream = io.BytesIO()
 
