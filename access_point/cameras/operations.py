@@ -1,26 +1,30 @@
+import subprocess
 import io
-import picamera
 from PIL import Image
 from app.logger import logger
 
-def setup_camera():
-    """
-    Initializes the camera object by creating a global `camera` object.
-    """
+# Camera was changed to a new one that uses libcamera-still
+# picamera2 can be used but is not ready for production
 
-    global camera
-    camera = picamera.PiCamera()
+# def setup_camera():
+#     """
+#     Initializes the camera object by creating a global `camera` object.
+#     """
 
-def cleanup_camera():
-    """
-    Closes the camera connection.
-    """
+#     global camera
+#     camera = picamera.PiCamera()
+
+# def cleanup_camera():
+#     """
+#     Closes the camera connection.
+#     """
     
-    camera.close()
+#     camera.close()
 
 def capture_image():
     """
-    Captures an image from the camera and flips it because the camera installed upside down.
+    Captures an image from the camera using libcamera-still and flips it 
+    because the camera is installed upside down.
 
     Returns:
         bytes: Image bytes.
@@ -30,10 +34,16 @@ def capture_image():
     """
 
     try:
-        stream = io.BytesIO()
+        # File to save the captured image temporarily
+        temp_image_file = "/tmp/captured_image.jpg"
+        
+        # Capture image using libcamera-still
+        subprocess.run(["libcamera-still", "-o", temp_image_file, "-t", "100", "--nopreview", "--autofocus-mode=manual", "--lens-position=4"], check=True)
 
-        camera.capture(stream, format='jpeg')
-
+        # Open the captured image
+        with open(temp_image_file, "rb") as image_file:
+            stream = io.BytesIO(image_file.read())
+        
         # Flip the image horizontally
         stream.seek(0)  # Go to the start of the stream
         image = Image.open(stream)
@@ -44,9 +54,10 @@ def capture_image():
         flipped_image.save(flipped_stream, format='jpeg')
         flipped_image_bytes = flipped_stream.getvalue()
 
-        logger.info(f"Image captured.")
+        logger.info("Image captured and flipped.")
 
         return flipped_image_bytes
+
     except Exception as e:
-        logger.error(f"Error capturing image: {e}")
+        logger.error(f"Error processing image: {e}")
         return None

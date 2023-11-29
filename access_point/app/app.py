@@ -1,13 +1,13 @@
 import asyncio
 from pir_motion_sensors import monitor_pir_motion_sensor, setup_pir_motion_sensor, cleanup_motion_sensor
-from cameras import setup_camera, cleanup_camera
+# from cameras import setup_camera, cleanup_camera
 from .logger import logger
 
 async def main():
     PIR_SENSOR_PIN = 18
 
     setup_pir_motion_sensor(PIR_SENSOR_PIN)
-    setup_camera()
+    # setup_camera()
     
     stop_event = asyncio.Event()
 
@@ -20,7 +20,7 @@ async def main():
         logger.error(f"Error: {e}")
         logger.info("Application stopping...")
     finally:
-        cleanup_camera()
+        # cleanup_camera()
         cleanup_motion_sensor()
         logger.info("Application stopped.")
 

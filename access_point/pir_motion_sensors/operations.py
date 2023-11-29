@@ -35,7 +35,7 @@ async def monitor_pir_motion_sensor():
         motion_sensor.wait_for_motion()
         motion_sensor.wait_for_no_motion()
         # delay before capturing a photo
-        await asyncio.sleep(0.3)
+        # await asyncio.sleep(0.3)
 
         if is_item_present:
             is_item_present = False
